@@ -203,8 +203,15 @@ class TaskManager {
 
         // Render active tasks
         if (activeTasks.length === 0) {
-            this.taskList.style.display = 'none';
+            this.taskList.style.display = 'block';
             this.emptyState.style.display = 'block';
+            this.taskList.innerHTML = `
+                <div class="drop-zone empty-list" 
+                     ondragover="taskManager.handleDragOver(event)"
+                     ondragenter="taskManager.handleDragEnter(event)"
+                     ondragleave="taskManager.handleDragLeave(event)"
+                     ondrop="taskManager.handleDropAtEnd(event, false)"></div>
+            `;
         } else {
             this.taskList.style.display = 'block';
             this.emptyState.style.display = 'none';
@@ -242,8 +249,15 @@ class TaskManager {
 
         // Render completed tasks
         if (completedTasks.length === 0) {
-            this.completedTasksList.style.display = 'none';
+            this.completedTasksList.style.display = 'block';
             this.completedEmptyState.style.display = 'block';
+            this.completedTasksList.innerHTML = `
+                <div class="drop-zone empty-list" 
+                     ondragover="taskManager.handleDragOver(event)"
+                     ondragenter="taskManager.handleDragEnter(event)"
+                     ondragleave="taskManager.handleDragLeave(event)"
+                     ondrop="taskManager.handleDropAtEnd(event, true)"></div>
+            `;
         } else {
             this.completedTasksList.style.display = 'block';
             this.completedEmptyState.style.display = 'none';
