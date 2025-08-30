@@ -81,7 +81,7 @@ body {
 }
 
 .left-column, .right-column {
-    flex: 1;
+    width: 50%;
     display: flex;
     flex-direction: column;
     background: #fefefe;
@@ -107,18 +107,74 @@ body {
     gap: 16px;
 }
 
-.todo-list .todo-item {
-    background: #fef9e7; /* Reverted to light gold/beige background */
+/* Drag and drop styles */
+.todo-item {
+    cursor: grab;
+}
+
+.todo-item.drag-over {
+    border-top: 2px solid #d4af37;
+}
+
+.completed-tasks-list .todo-item.drag-over {
+    border-top: 2px solid #a8d5ba;
+}
+
+.drop-zone {
+    height: 20px;
+    margin: 8px 0;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.drop-zone:hover, .drop-zone.drag-over {
+    background: rgba(212, 175, 55, 0.1);
+}
+
+.completed-tasks-list .drop-zone:hover,
+.completed-tasks-list .drop-zone.drag-over {
+    background: rgba(168, 213, 186, 0.1);
+}
+
+.todo-item.drag-over {
+    transform: translateY(10px);
+    position: relative;
+}
+
+.todo-item.drag-over::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: #d4af37;
+    border-radius: 2px;
+}
+
+.completed-tasks-list .todo-item.drag-over::before {
+    background: #a8d5ba;
+}
+
+.todo-item {
+    background: #fef9e7;
     padding: 32px;
     border-radius: 12px;
     margin-bottom: 16px;
     box-shadow: 0 2px 8px rgba(139, 115, 85, 0.08);
     transition: all 0.3s ease;
-    border-left: 4px solid #d4af37; /* Gold border */
+    border-left: 4px solid #d4af37;
     display: flex;
     align-items: center;
     gap: 20px;
     cursor: grab;
+    flex-wrap: wrap;
+    min-height: 90px;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 .todo-list .todo-item:hover, .completed-tasks-list .todo-item:hover {
@@ -163,9 +219,8 @@ body {
     font-weight: 400;
     color: #2c2c2c;
     line-height: 1.4;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
+    overflow-wrap: break-word; /* Allow text to break */
+    flex: 1;
 }
 
 /* Empty State Styles */
@@ -194,38 +249,58 @@ body {
 
 /* Button Styles */
 .input-group {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    position: relative;
     max-width: 600px;
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 #todoInput {
     flex: 1;
+    padding: 16px 24px;
+    border: 2px solid #e8e0d0;
+    border-radius: 12px;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+#todoInput:focus {
+    border-color: #d4af37;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
 }
 
 .add-btn {
-    background: linear-gradient(135deg, #fefefe, #d4af37);
-    color: #8b7355;
-    border: none;
-    padding: 0;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    font-size: 24px;
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     display: flex;
     align-items: center;
     justify-content: center;
+    background: linear-gradient(135deg, #8b7355, #a8937b);
+    color: white;
+    border: none;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 8px 24px rgba(212, 175, 55, 0.25);
+    box-shadow: 0 2px 8px rgba(139, 115, 85, 0.2);
 }
 
 .add-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 32px rgba(212, 175, 55, 0.35);
-    background: linear-gradient(135deg, #e8c547, #d4af37);
+    box-shadow: 0 4px 12px rgba(139, 115, 85, 0.3);
+    background: linear-gradient(135deg, #9c8466, #b9a48c);
+}
+
+.add-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(139, 115, 85, 0.2);
+    background: linear-gradient(135deg, #7a6447, #97826a);
 }
 
 .add-btn:active {
@@ -307,17 +382,12 @@ body {
 }
 
 .completed-tasks-list .todo-item {
-    background: #e0f7e9; /* Pastel green background */
-    padding: 32px;
-    border-radius: 12px;
-    margin-bottom: 16px;
-    box-shadow: 0 2px 8px rgba(139, 115, 85, 0.08);
-    transition: all 0.3s ease;
-    border-left: 4px solid #a8d5ba; /* Pastel green border */
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    cursor: grab;
+    background: #e0f7e9;
+    border-left-color: #a8d5ba;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 .completed-tasks-list .todo-item .todo-text {
@@ -325,9 +395,8 @@ body {
     font-weight: 400;
     color: #2c2c2c;
     line-height: 1.4;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
+    overflow-wrap: break-word;
+    flex: 1;
 }
 
 .completed-tasks-list .todo-item .todo-checkbox {

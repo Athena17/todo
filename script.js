@@ -10,7 +10,7 @@ class TaskManager {
 
     initializeElements() {
         this.taskInput = document.getElementById('todoInput');
-        this.addTaskBtn = document.getElementById('addTodo'); // Corrected ID
+        this.addTaskBtn = document.getElementById('addTodo');
         this.taskList = document.getElementById('todoList');
         this.emptyState = document.getElementById('emptyState');
         this.dateDisplay = document.getElementById('dateDisplay');
@@ -99,10 +99,12 @@ class TaskManager {
         this.draggedTask = taskId;
         e.dataTransfer.effectAllowed = 'move';
         e.target.style.opacity = '0.5';
+        e.target.classList.add('dragging');
     }
 
     handleDragEnd(e) {
         e.target.style.opacity = '1';
+        e.target.classList.remove('dragging');
         this.draggedTask = null;
     }
 
@@ -112,67 +114,20 @@ class TaskManager {
     }
 
     handleDragEnter(e) {
-        const todoItem = e.target.closest('.todo-item');
-        if (todoItem) {
-            todoItem.classList.add('drag-over');
-        }
+        e.target.closest('.todo-item')?.classList.add('drag-over');
     }
 
     handleDragLeave(e) {
-        const todoItem = e.target.closest('.todo-item');
-        if (todoItem) {
-            todoItem.classList.remove('drag-over');
-        }
+        e.target.closest('.todo-item')?.classList.remove('drag-over');
     }
 
     handleDrop(e, targetTaskId) {
         e.preventDefault();
+        e.target.closest('.todo-item')?.classList.remove('drag-over');
         
-        if (!this.draggedTask || this.draggedTask === targetTaskId) return;
-        
-        const draggedTask = this.tasks.find(t => t.id === this.draggedTask);
-        const targetTask = this.tasks.find(t => t.id === targetTaskId);
-        
-        if (!draggedTask || !targetTask) return;
-        
-        // Remove the dragged task
-        const draggedIndex = this.tasks.findIndex(t => t.id === this.draggedTask);
-        const targetIndex = this.tasks.findIndex(t => t.id === targetTaskId);
-        
-        // If moving between sections
-        if (draggedTask.completed !== targetTask.completed) {
-            draggedTask.completed = targetTask.completed;
+        if (this.draggedTask && this.draggedTask !== targetTaskId) {
+            this.reorderTasks(this.draggedTask, targetTaskId);
         }
-        
-        // Move the task
-        this.tasks.splice(draggedIndex, 1);
-        this.tasks.splice(targetIndex, 0, draggedTask);
-        
-        this.saveTasks();
-        this.renderTasks();
-    }
-
-    handleDropAtEnd(e, completed) {
-        e.preventDefault();
-        
-        if (!this.draggedTask) return;
-        
-        const draggedTask = this.tasks.find(t => t.id === this.draggedTask);
-        if (!draggedTask) return;
-        
-        // Remove the dragged task from its current position
-        this.tasks = this.tasks.filter(t => t.id !== this.draggedTask);
-        
-        // Update completion status if needed
-        if (draggedTask.completed !== completed) {
-            draggedTask.completed = completed;
-        }
-        
-        // Add to the end of the appropriate list
-        this.tasks.push(draggedTask);
-        
-        this.saveTasks();
-        this.renderTasks();
     }
 
     reorderTasks(draggedId, targetId) {
@@ -181,17 +136,17 @@ class TaskManager {
         
         if (!draggedTask || !targetTask) return;
         
-        const draggedIndex = this.tasks.findIndex(t => t.id === draggedId);
-        const targetIndex = this.tasks.findIndex(t => t.id === targetId);
-        
-        // If moving between sections
-        if (draggedTask.completed !== targetTask.completed) {
-            draggedTask.completed = targetTask.completed;
+        // If both tasks are in the same completion state (both active or both completed)
+        if (draggedTask.completed === targetTask.completed) {
+            // Regular reordering within the same list
+            const draggedIndex = this.tasks.findIndex(t => t.id === draggedId);
+            const targetIndex = this.tasks.findIndex(t => t.id === targetId);
+            const [movedTask] = this.tasks.splice(draggedIndex, 1);
+            this.tasks.splice(targetIndex, 0, movedTask);
+        } else {
+            // Moving between lists - just toggle completion
+            draggedTask.completed = !draggedTask.completed;
         }
-        
-        // Move the task
-        this.tasks.splice(draggedIndex, 1);
-        this.tasks.splice(targetIndex, 0, draggedTask);
         
         this.saveTasks();
         this.renderTasks();
@@ -231,13 +186,7 @@ class TaskManager {
                         <button class="delete-btn" onclick="taskManager.deleteTask(${task.id})" title="Delete">×</button>
                     </div>
                 `;
-            }).join('') + `
-                <div class="drop-zone" 
-                     ondragover="taskManager.handleDragOver(event)"
-                     ondragenter="taskManager.handleDragEnter(event)"
-                     ondragleave="taskManager.handleDragLeave(event)"
-                     ondrop="taskManager.handleDropAtEnd(event, false)"></div>
-            `;
+            }).join('');
         }
 
         // Render completed tasks
@@ -270,13 +219,7 @@ class TaskManager {
                         <button class="delete-btn" onclick="taskManager.deleteTask(${task.id})" title="Delete">×</button>
                     </div>
                 `;
-            }).join('') + `
-                <div class="drop-zone" 
-                     ondragover="taskManager.handleDragOver(event)"
-                     ondragenter="taskManager.handleDragEnter(event)"
-                     ondragleave="taskManager.handleDragLeave(event)"
-                     ondrop="taskManager.handleDropAtEnd(event, true)"></div>
-            `;
+            }).join('');
         }
     }
 
@@ -359,3 +302,4 @@ if (!localStorage.getItem('tasks')) {
     ];
     localStorage.setItem('tasks', JSON.stringify(sampleTasks));
 }
+
