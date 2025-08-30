@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Tasks</title>
+    <link rel="stylesheet" href="../styles/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Daily Tasks</h1>
+            <div class="date-display" id="dateDisplay"></div>
+        </header>
+
+        <!-- Full width add task section -->
+        <div class="add-task-full-width">
+            <div class="todo-input-section">
+                <h2>Add New Task</h2>
+                <div class="input-group">
+                    <input type="text" id="todoInput" placeholder="What do you need to do today?" maxlength="100">
+                    <button id="addTodo" class="add-btn">+</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Two columns for tasks -->
+        <div class="tasks-columns">
+            <div class="left-column">
+                <h2>Active Tasks</h2>
+                <div class="todo-list" id="todoList">
+                    <!-- Active tasks will be dynamically added here -->
+                </div>
+                <div id="emptyState">
+                    <h3>No tasks yet!</h3>
+                    <p>Add your first task to get started.</p>
+                </div>
+            </div>
+
+            <div class="right-column">
+                <h2>Completed Tasks</h2>
+                <div class="completed-tasks-list" id="completedTasksList">
+                    <!-- Completed tasks will be dynamically added here -->
+                </div>
+                <div id="completedEmptyState">
+                    <p>No completed tasks floating in space yet</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../scripts/script.js"></script>
+</body>
+</html>
